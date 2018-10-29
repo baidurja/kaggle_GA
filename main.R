@@ -11,7 +11,29 @@ theData$socialEngagementType = as.factor( theData$socialEngagementType )
 totals_col = json_clean( theData$totals )
 device_col = json_clean( theData$device )
 geonet_col = json_clean( theData$geoNetwork )
-traffsrc_col = json_clean( theData$trafficSource )
+# traffsrc_col = json_clean( theData$trafficSource )
+
+theData$totals = NULL
+theData$device = NULL
+theData$geoNetwork = NULL
+# theData$trafficSource = NULL
+
+theData = cbind( theData, totals_col )
+theData = cbind( theData, device_col )
+theData = cbind( theData, geonet_col )
+# theData = cbind( theData, traffsrc_col )
+
+ncols = ncol( theData )
+k = 1
+while ( k <= ncols ){
+  if ( sum(!duplicated(theData[,..k])) == 1 ){
+    print( k )
+    theData[ , k ] = NULL
+    ncols = ncols - 1
+  } else {
+    k = k + 1
+  }
+}
 
 # k = theData$totals
 # d = data.frame( jsoncol = k, stringsAsFactors = FALSE )
@@ -37,6 +59,14 @@ json_clean =  function(column){
   gc()
   return(ff)
 }
+
+flatten_json <- . %>%  # simple way of writing function
+  gsub('\"\"','\"',.) %>%
+  str_c(., collapse = ",") %>%  # add rows together
+  str_c("[", ., "]") %>%   # to make list
+  fromJSON(flatten = T)
+
+test <- bind_cols(flatten_json(theData$trafficSource))
 
 
 unpackJSONCol = function( theDF, theDFCol )
