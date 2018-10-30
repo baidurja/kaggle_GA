@@ -35,6 +35,13 @@ while ( k <= ncols ){
   }
 }
 
+theData$transactionRevenue[ is.na( theData$transactionRevenue) ] = 0
+
+theData$pageviews = as.numeric(theData$pageviews)
+theData$transactionRevenue = as.numeric(theData$transactionRevenue)
+
+pairs(~pageviews+transactionRevenue, data=theData)
+
 # k = theData$totals
 # d = data.frame( jsoncol = k, stringsAsFactors = FALSE )
 # 
@@ -46,10 +53,10 @@ gc()
 
 ggplot( theData, aes( channelGrouping ) ) + geom_bar()
 
-
-
-
-
+ggplot( theData, aes(x=pageviews, y=transactionRevenue)) + 
+  stat_summary(fun.y="mean", geom="bar")
+ggplot( theData, aes(x=channelGrouping, y=transactionRevenue)) + 
+  stat_summary(fun.y="mean", geom="bar")
 
 
 json_clean =  function(column){
